@@ -32,26 +32,50 @@
     });
 
 
-
 </script>
-<div class="mx-auto p-10">
-    <canvas bind:this={chartCanvas} id="myChart"></canvas>
+<div class="mx-auto p-10 grid md:grid-cols-2 gap-2">
 
-    <div class="my-text">
-        <h1 class="my-text__boat text-3xl font-bold underline text-blue-600 hover:shadow-2xl">Welcome to SvelteKit</h1>
+    <div>
+        <canvas bind:this={chartCanvas} id="myChart"></canvas>
     </div>
+    <div>
+        <div class="text-2xl font-bold">Add Incident</div>
 
-    <p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
-    <button class="btn btn-primary">I'm here</button>
+        <div class="form-control w-full max-w-md">
+            <label class="label" for="incident">
+                <span class="label-text">Incident Number</span>
+            </label>
+            <input type="text" id="incident" class="input input-bordered"/>
+        </div>
+
+        <div class="form-control">
+            <label class="label cursor-pointer justify-start" for="type">
+                <span class="label-text">Type</span>
+            </label>
+            <div class="flex flex-row items-center mb-2 w-full max-w-md">
+                <input id="type" type="radio" name="radio" class="radio checked: bg-red-500 mr-2" checked/>
+                <input class="input input-bordered w-full"/>
+            </div>
+            <div class="flex flex-row items-center w-full max-w-md">
+                <input type="radio" name="radio" class="radio checked: bg-red-500 mr-2"/>
+                <input class="input input-bordered w-full"/>
+            </div>
+        </div>
+
+        <div class="form-control">
+            <label class="label" for="notes">
+                <span class="label-text">Notes</span>
+            </label>
+            <textarea id="notes" class="textarea textarea-bordered max-w-md"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-1">Add Incident</button>
+
+    </div>
 
 </div>
 
 
-
 <style lang="scss">
-  .my-text {
-    &__boat {
-      color: red;
-    }
-  }
+
 </style>
