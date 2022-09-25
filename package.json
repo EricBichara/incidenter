@@ -12,6 +12,7 @@
     "format": "prettier --plugin-search-dir . --write ."
   },
   "devDependencies": {
+    "@supabase/supabase-js": "^1.35.7",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "@types/chart.js": "^2.9.37",
