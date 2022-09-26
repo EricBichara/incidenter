@@ -4,11 +4,12 @@
     import {Chart, registerables} from "chart.js";
     import type {PageData} from './$types';
     import {enhance} from '$app/forms';
+    import type {Incident} from "$lib/model";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
 
-    $: incidents = data.incidents;
+    $: incidents = data.incidents as Incident[];
 
     let chartValues = [0, 10, 5, 2, 20, 30, 45];
     let chartLabels = ['January',
@@ -24,7 +25,7 @@
     function prepareData() {
         let map = new Map();
         incidents.forEach((incident) => {
-            if (map[incident.types.title]) {
+            if (map.get(incident.types.title)) {
                 map.set(incident.types.title, 1 + map.get(incident.types.title));
             } else {
                 map.set(incident.types.title, 1);
@@ -50,18 +51,20 @@
         };
 
         const ctx = chartCanvas.getContext('2d');
-        chart = new Chart(ctx, {
-            data: tableData,
-            type: 'pie',
-            options: {
-                maintainAspectRatio: true,
-                plugins: {
-                    legend: {
-                        position: "bottom"
+        if (ctx) {
+            chart = new Chart(ctx, {
+                data: tableData,
+                type: 'pie',
+                options: {
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        }
                     }
                 }
-            }
-        })
+            })
+        }
     });
 
 
