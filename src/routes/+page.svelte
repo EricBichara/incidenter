@@ -11,13 +11,8 @@
 
     $: incidents = data.incidents as Incident[];
 
-    let chartValues = [0, 10, 5, 2, 20, 30, 45];
-    let chartLabels = ['January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',];
+    let chartValues = [];
+    let chartLabels = [];
 
     let chartCanvas: HTMLCanvasElement;
     let chart;
@@ -44,7 +39,7 @@
         const tableData = {
             labels: chartLabels,
             datasets: [{
-                label: 'My First dataset',
+                label: 'Incidenter',
                 data: chartValues,
                 backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
             }]
