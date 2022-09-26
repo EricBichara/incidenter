@@ -3,7 +3,7 @@ import type {PageServerLoad} from "../../.svelte-kit/types/src/routes/$types";
 import {supabase} from "../lib/db";
 
 export const load: PageServerLoad = async () => {
-    const incidents = await supabase.from('incidents').select(`incidentId, created_at, types:typeId(title), notes`);
+    const incidents = await supabase.from('incidents').select(`incidentId, created_at, types:typeId(title, id), notes`);
 
     console.log('incidents')
 

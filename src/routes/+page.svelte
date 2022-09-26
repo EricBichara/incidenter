@@ -11,8 +11,9 @@
 
     $: incidents = data.incidents as Incident[];
 
-    let chartValues = [];
-    let chartLabels = [];
+    let chartValues;
+    let chartLabels;
+    let typeOptions = [];
 
     let chartCanvas: HTMLCanvasElement;
     let chart;
@@ -24,12 +25,14 @@
                 map.set(incident.types.title, 1 + map.get(incident.types.title));
             } else {
                 map.set(incident.types.title, 1);
+                typeOptions = [...typeOptions, incident.types];
             }
         })
         chartLabels = Array.from(map.keys());
         chartValues = Array.from(map.values());
         console.log('labels', chartLabels)
         console.log('values', chartValues)
+        console.log('options', typeOptions)
     }
 
     onMount(async () => {
@@ -79,13 +82,18 @@
             <input type="text" id="incident" name="code" class="input input-bordered"/>
         </div>
 
-        <div class="form-control">
+        <div class="form-control w-full max-w-md">
             <label class="label cursor-pointer justify-start" for="type">
                 <span class="label-text">Type</span>
             </label>
-            <div class="flex flex-row items-center mb-2 w-full max-w-md">
+            <div class="flex flex-row items-center mb-2 max-w-md">
                 <input id="type" type="radio" name="radio" class="radio checked: bg-red-500 mr-2" checked/>
-                <input class="input input-bordered w-full"/>
+                <select class="select select-bordered">
+                    <option>Select Type</option>
+                    {#each typeOptions as option}
+                        <option>{option.title}</option>
+                    {/each}
+                </select>
             </div>
             <div class="flex flex-row items-center w-full max-w-md">
                 <input type="radio" name="radio" class="radio checked: bg-red-500 mr-2"/>
