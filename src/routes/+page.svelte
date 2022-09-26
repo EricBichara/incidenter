@@ -17,19 +17,38 @@
         'April',
         'May',
         'June',];
-    const tableData = {
-        labels: chartLabels,
-        datasets: [{
-            label: 'My First dataset',
-            data: chartValues,
-            backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
-        }]
-    };
+
     let chartCanvas: HTMLCanvasElement;
     let chart;
 
+    function prepareData() {
+        let map = new Map();
+        incidents.forEach((incident) => {
+            if (map[incident.types.title]) {
+                map.set(incident.types.title, 1 + map.get(incident.types.title));
+            } else {
+                map.set(incident.types.title, 1);
+            }
+        })
+        chartLabels = Array.from(map.keys());
+        chartValues = Array.from(map.values());
+        console.log('labels', chartLabels)
+        console.log('values', chartValues)
+    }
+
     onMount(async () => {
+        prepareData();
+
         Chart.register(...registerables);
+        const tableData = {
+            labels: chartLabels,
+            datasets: [{
+                label: 'My First dataset',
+                data: chartValues,
+                backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
+            }]
+        };
+
         const ctx = chartCanvas.getContext('2d');
         chart = new Chart(ctx, {
             data: tableData,
@@ -38,22 +57,19 @@
                 maintainAspectRatio: true,
                 plugins: {
                     legend: {
-                        position: "left"
+                        position: "bottom"
                     }
                 }
             }
         })
-
-        console.log(incidents)
     });
 
 
 </script>
 <div class="mx-auto grid md:grid-cols-2 gap-10">
 
-    <div>
+    <div class="px-14">
         <canvas bind:this={chartCanvas} id="myChart"></canvas>
-
     </div>
     <form method="POST" action="?/add" use:enhance>
         <div class="text-2xl font-bold">Add Incident</div>
@@ -99,16 +115,16 @@
                 <table class="min-w-full text-center">
                     <thead class="border-b bg-gray-50">
                     <tr>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Incident ID
                         </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Type
                         </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Created At
                         </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4">
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Notes
                         </th>
                     </tr>
@@ -116,16 +132,16 @@
                     <tbody>
                     {#each incidents as incident}
                         <tr class="bg-white border-b">
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
                                 {incident.incidentId}
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                                {new Date(incident.created_at).toLocaleDateString()}
-                            </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
                                 {incident.types.title}
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
+                                {new Date(incident.created_at).toLocaleDateString()}
+                            </td>
+                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
                                 {incident.notes}
                             </td>
                         </tr>
