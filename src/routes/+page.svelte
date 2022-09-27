@@ -1,10 +1,9 @@
 <script lang="ts">
     import {Chart, registerables} from "chart.js";
-    import type {PageData} from './$types';
     import {enhance} from '$app/forms';
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
-    import type {ActionData} from "./$types";
+    import type {ActionData, PageData} from "./$types";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
@@ -12,8 +11,6 @@
     /** @type {import('./$types').ActionData} */
     export let form: ActionData;
 
-
-    let isinitialized = false;
     let chartValues;
     let chartLabels;
     let typeOptions = [];
@@ -39,7 +36,6 @@
     onMount(async () => {
         prepareData();
         createChart();
-        isinitialized = true;
     });
 
     function prepareData() {
