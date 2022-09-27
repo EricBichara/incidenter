@@ -15,6 +15,9 @@
     let chartLabels;
     let typeOptions = [];
 
+    let selectedType;
+    let radio = 0;
+
     let chartCanvas: HTMLCanvasElement;
     let chart;
 
@@ -87,17 +90,17 @@
                 <span class="label-text">Type</span>
             </label>
             <div class="flex flex-row items-center mb-2 max-w-md">
-                <input id="type" type="radio" name="radio" class="radio checked: bg-red-500 mr-2" checked/>
-                <select class="select select-bordered">
-                    <option>Select Type</option>
+                <input id="type" bind:group={radio} value={0} type="radio" name="radio" class="radio checked: bg-red-500 mr-2" checked/>
+                <select name="selected" class="select select-bordered" value={selectedType}>
+                    <option disabled>Select Type</option>
                     {#each typeOptions as option}
-                        <option>{option.title}</option>
+                        <option value={option.id}>{option.title}</option>
                     {/each}
                 </select>
             </div>
             <div class="flex flex-row items-center w-full max-w-md">
-                <input type="radio" name="radio" class="radio checked: bg-red-500 mr-2"/>
-                <input class="input input-bordered w-full"/>
+                <input type="radio" name="radio" bind:group={radio} value={1} class="radio checked: bg-red-500 mr-2"/>
+                <input name="newtype" class="input input-bordered w-full"/>
             </div>
         </div>
 
@@ -108,7 +111,7 @@
             <textarea name="notes" id="notes" class="textarea textarea-bordered max-w-md"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-1">Add Incident</button>
+        <button type="submit" class="btn btn-primary mt-2">Add Incident</button>
 
     </form>
 
