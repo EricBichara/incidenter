@@ -1,6 +1,7 @@
-import {error} from "@sveltejs/kit";
 import type {PageServerLoad, Actions} from "./$types";
-import {supabase} from "../lib/db";
+import {supabase} from "$lib/db";
+import type {Incident, Type} from "$lib/model";
+import {error as err} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async () => {
     const incidents = await supabase.from('incidents').select(`incidentId, created_at, types:typeId(title, id), notes`);
@@ -8,10 +9,10 @@ export const load: PageServerLoad = async () => {
     console.log('incidents load')
 
     if (incidents) {
-        return {incidents: incidents.data};
+        return {incidents: incidents.data as Incident[]};
     }
 
-    throw error(404, 'Not found');
+    throw err(404, 'Not found');
 }
 
 /** @type {import('./$types').Actions} */
@@ -19,13 +20,47 @@ export const actions: Actions = {
 
     add: async ({request}) => {
         const form = await request.formData();
-        /*const {data, error} = await supabase.from('incidents').insert({
-            created_at: new Date(),
-            typeId: 1,
-            incidentId: Math.round(Math.random() * 10),
-            notes: 'its another one'
-        })
-        console.log('add: ', data, error);*/
-        console.log('form', form.get('code'), form.get('selected'), form.get('radio'), form.get('newtype'), form.get('notes'))
+        const incidentNumber: string = form.get('code') as string;
+        const newTypeSelected: boolean = form.get('radio') === '1';
+        const selectedType: number = +(form.get('selected') as string);
+        const newType: string = form.get('newtype') as string;
+        const notes: string = form.get('notes') as string;
+
+        //Get types
+        const typesResponse = await supabase.from('types').select(`id, title`);
+        const types: Type[] = typesResponse.data as Type[];
+        //Add if new type
+        const isNewType = types.find((type: Type) => type.title == newType) == undefined;
+
+        if (newTypeSelected && isNewType) {
+            const typesResult = await supabase.from('types').insert({
+                title: newType
+            })
+
+            if (typesResult.error) {
+                throw err(404, {message: 'something went wrong'});
+            }
+            const incidents1 = await supabase.from('incidents').insert({
+                    typeId: typesResult.data[0].id,
+                    incidentId: incidentNumber,
+                    notes: notes
+                }
+            )
+
+            if (incidents1.error) {
+                throw err(404, {message: 'something went wrong'});
+            }
+        } else {
+            const incidents2 = await supabase.from('incidents').insert({
+                    typeId: selectedType,
+                    incidentId: incidentNumber,
+                    notes: notes
+                }
+            )
+
+            if (incidents2.error) {
+                throw err(404, {message: 'something went wrong'});
+            }
+        }
     },
 };

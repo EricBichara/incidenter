@@ -1,16 +1,16 @@
 <script lang="ts">
-
-    import {onMount} from 'svelte';
     import {Chart, registerables} from "chart.js";
     import type {PageData} from './$types';
     import {enhance} from '$app/forms';
     import type {Incident} from "$lib/model";
+    import {onMount} from "svelte";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
 
     $: incidents = data.incidents as Incident[];
 
+    let isinitialized = false;
     let chartValues;
     let chartLabels;
     let typeOptions = [];
@@ -20,6 +20,12 @@
 
     let chartCanvas: HTMLCanvasElement;
     let chart;
+
+    onMount(async () => {
+        prepareData();
+        createChart();
+        isinitialized = true;
+    });
 
     function prepareData() {
         let map = new Map();
@@ -38,9 +44,7 @@
         console.log('options', typeOptions)
     }
 
-    onMount(async () => {
-        prepareData();
-
+    function createChart() {
         Chart.register(...registerables);
         const tableData = {
             labels: chartLabels,
@@ -66,8 +70,7 @@
                 }
             })
         }
-    });
-
+    }
 
 </script>
 <div class="mx-auto grid md:grid-cols-2 gap-10">
@@ -90,7 +93,8 @@
                 <span class="label-text">Type</span>
             </label>
             <div class="flex flex-row items-center mb-2 max-w-md">
-                <input id="type" bind:group={radio} value={0} type="radio" name="radio" class="radio checked: bg-red-500 mr-2" checked/>
+                <input id="type" bind:group={radio} value={0} type="radio" name="radio"
+                       class="radio checked: bg-red-500 mr-2" checked/>
                 <select name="selected" class="select select-bordered" value={selectedType}>
                     <option disabled>Select Type</option>
                     {#each typeOptions as option}
