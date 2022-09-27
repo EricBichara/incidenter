@@ -1,12 +1,10 @@
 import type {PageServerLoad, Actions} from "./$types";
 import {supabase} from "$lib/db";
 import type {Incident, Type} from "$lib/model";
-import {error as err} from "@sveltejs/kit";
+import {error as err, invalid} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async () => {
     const incidents = await supabase.from('incidents').select(`incidentId, created_at, types:typeId(title, id), notes`);
-
-    console.log('incidents load')
 
     if (incidents) {
         return {incidents: incidents.data as Incident[]};
@@ -25,6 +23,11 @@ export const actions: Actions = {
         const selectedType: number = +(form.get('selected') as string);
         const newType: string = form.get('newtype') as string;
         const notes: string = form.get('notes') as string;
+
+
+        if (!incidentNumber || (newTypeSelected && !newType)) {
+            return invalid(400, {missing: true});
+        }
 
         //Get types
         const typesResponse = await supabase.from('types').select(`id, title`);

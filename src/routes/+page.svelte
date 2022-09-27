@@ -4,11 +4,14 @@
     import {enhance} from '$app/forms';
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
+    import type {ActionData} from "./$types";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
 
-    $: incidents = data.incidents as Incident[];
+    /** @type {import('./$types').ActionData} */
+    export let form: ActionData;
+
 
     let isinitialized = false;
     let chartValues;
@@ -21,6 +24,18 @@
     let chartCanvas: HTMLCanvasElement;
     let chart;
 
+    $: incidents = data.incidents as Incident[];
+
+    $: {
+        incidents;
+        if(chart){
+            prepareData();
+            chart.data.labels = chartLabels;
+            chart.data.datasets[0].data = chartValues;
+            chart.update();
+        }
+    }
+
     onMount(async () => {
         prepareData();
         createChart();
@@ -29,6 +44,7 @@
 
     function prepareData() {
         let map = new Map();
+        typeOptions = [];
         incidents.forEach((incident) => {
             if (map.get(incident.types.title)) {
                 map.set(incident.types.title, 1 + map.get(incident.types.title));
@@ -39,9 +55,6 @@
         })
         chartLabels = Array.from(map.keys());
         chartValues = Array.from(map.values());
-        console.log('labels', chartLabels)
-        console.log('values', chartValues)
-        console.log('options', typeOptions)
     }
 
     function createChart() {
@@ -51,7 +64,7 @@
             datasets: [{
                 label: 'Incidenter',
                 data: chartValues,
-                backgroundColor: ["#0074D9", "#FF4136", "#2ECC40", "#FF851B", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
+                backgroundColor: ["#191919", "#2D4263", "#C84B31", "#ECDBBA", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
             }]
         };
 
@@ -73,12 +86,12 @@
     }
 
 </script>
-<div class="mx-auto grid md:grid-cols-2 gap-10">
+<div class="mx-48 grid lg:grid-cols-2 gap-4">
 
-    <div class="px-14">
+    <div class="p-8 border aspect-square shadow-lg rounded-md">
         <canvas bind:this={chartCanvas} id="myChart"></canvas>
     </div>
-    <form method="POST" action="?/add" use:enhance>
+    <form method="POST" action="?/add" use:enhance class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
         <div class="form-control w-full max-w-md">
@@ -119,9 +132,12 @@
 
     </form>
 
+    {#if form?.missing}
+        <div>Some fiels are missing</div>
+    {/if}
 </div>
 
-<div class="flex flex-col">
+<div class="flex flex-col mx-32 mt-6">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-4 inline-block min-w-full sm:px-6 lg:px-8">
             <div class="overflow-hidden">
@@ -144,17 +160,17 @@
                     </thead>
                     <tbody>
                     {#each incidents as incident}
-                        <tr class="bg-white border-b">
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
+                        <tr class="bg-white border-b hover:bg-gray-100">
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {incident.incidentId}
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {incident.types.title}
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {new Date(incident.created_at).toLocaleDateString()}
                             </td>
-                            <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap text-left">
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {incident.notes}
                             </td>
                         </tr>
