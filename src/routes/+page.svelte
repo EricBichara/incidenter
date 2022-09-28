@@ -4,6 +4,8 @@
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
     import type {ActionData, PageData} from "./$types";
+    import {field, form as svform} from "svelte-forms";
+    import {required} from "svelte-forms/validators";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
@@ -90,6 +92,8 @@
     <form method="POST" action="?/add" use:enhance class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
+        <input type="text" class="input input-bordered"/>
+
         <div class="form-control w-full max-w-md">
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
@@ -124,7 +128,7 @@
             <textarea name="notes" id="notes" class="textarea textarea-bordered max-w-md"></textarea>
         </div>
 
-        <button type="submit" class="btn btn-primary mt-2">Add Incident</button>
+        <button disabled={!$myform.valid} type="submit" class="btn btn-primary mt-2">Add Incident</button>
 
     </form>
 
