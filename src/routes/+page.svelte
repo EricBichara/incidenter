@@ -4,8 +4,7 @@
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
     import type {ActionData, PageData} from "./$types";
-    import {field, form as svform} from "svelte-forms";
-    import {required} from "svelte-forms/validators";
+    import suite from "$lib/suite";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
@@ -27,13 +26,21 @@
 
     $: {
         incidents;
-        if(chart){
+        if (chart) {
             prepareData();
             chart.data.labels = chartLabels;
             chart.data.datasets[0].data = chartValues;
             chart.update();
         }
     }
+
+    //FORM VALIDATION
+    let res = suite.get();
+    let formState = {};
+    const handleChange = name => {
+        console.log('change');
+        res = suite(formState);
+    };
 
     onMount(async () => {
         prepareData();
@@ -89,16 +96,20 @@
     <div class="p-8 border aspect-square shadow-lg rounded-md">
         <canvas bind:this={chartCanvas} id="myChart"></canvas>
     </div>
-    <form method="POST" action="?/add" use:enhance class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
+    <form method="POST" action="?/add" use:enhance
+          class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
-
-        <input type="text" class="input input-bordered"/>
 
         <div class="form-control w-full max-w-md">
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
             </label>
-            <input type="text" id="incident" name="code" class="input input-bordered"/>
+            <input type="text" id="incident" name="code" class="input input-bordered"
+                   bind:value={formState.incidentId}
+                   on:input={handleChange}/>
+            {#if res.getErrors('incidentId')}
+                <div class="bg-red-500 text-accent/70">{res.getErrors('incidentId')}</div>
+            {/if}
         </div>
 
         <div class="form-control w-full max-w-md">
@@ -128,7 +139,7 @@
             <textarea name="notes" id="notes" class="textarea textarea-bordered max-w-md"></textarea>
         </div>
 
-        <button disabled={!$myform.valid} type="submit" class="btn btn-primary mt-2">Add Incident</button>
+        <button disabled={!res.isValid()} type="submit" class="btn btn-primary mt-2">Add Incident</button>
 
     </form>
 
