@@ -37,10 +37,10 @@
     //FORM VALIDATION
     let res = suite.get();
     let formState = {radio: 0};
-    const handleChange = name => {
-        console.log('change');
+
+    $: {
         res = suite(formState);
-    };
+    }
 
     onMount(async () => {
         prepareData();
@@ -105,8 +105,7 @@
                 <span class="label-text">Incident Number</span>
             </label>
             <input type="text" id="incident" name="code" class="input input-bordered"
-                   bind:value={formState.incidentId}
-                   on:input={handleChange}/>
+                   bind:value={formState.incidentId}/>
             {#if res.getErrors('incidentId')}
                 <div class="bg-red-500 text-accent/70">{res.getErrors('incidentId')}</div>
             {/if}
@@ -117,7 +116,8 @@
                 <span class="label-text">Type</span>
             </label>
             <div class="flex flex-row items-center mb-2 max-w-md">
-                <input id="type" bind:group={formState.radio} value={0} type="radio" name="radio"
+                <input id="type" bind:group={formState.radio} value={0} type="radio"
+                       name="radio"
                        class="radio checked: bg-red-500 mr-2" checked/>
                 <select name="selected" class="select select-bordered" value={selectedType}>
                     <option disabled>Select Type</option>
@@ -127,8 +127,10 @@
                 </select>
             </div>
             <div class="flex flex-row items-center w-full max-w-md">
-                <input type="radio" name="radio" bind:group={formState.radio} value={1} class="radio checked: bg-red-500 mr-2"/>
-                <input on:input={handleChange} bind:value={formState.newtype} name="newtype" class="input input-bordered w-full"/>
+                <input type="radio" name="radio" bind:group={formState.radio} value={1}
+                       class="radio checked: bg-red-500 mr-2"/>
+                <input bind:value={formState.newtype} name="newtype"
+                       class="input input-bordered w-full"/>
             </div>
         </div>
 

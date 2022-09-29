@@ -7,9 +7,9 @@ const suite = create((data = {}) => {
     })
 
     test('newtype', 'type required', () => {
+        console.log('checking newtype');
         if (data.radio === 1) {
-            console.log('incident test', data);
-            enforce(data.incidentId).isNotBlank();
+            enforce(data.newtype).isNotBlank();
         }
 
     })
