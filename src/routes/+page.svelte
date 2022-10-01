@@ -126,7 +126,8 @@
             <div class="flex flex-row items-center mb-2">
                 <input id="type" bind:group={formState.radio} value={0} type="radio"
                        name="radio"
-                       class="radio checked: bg-red-500 mr-2" checked/>
+                       class="radio checked: bg-red-500 mr-2" checked
+                       on:input={()=>handleChange('newtype')}/>
                 <select name="selected" class="select select-bordered" value={selectedType}>
                     <option disabled>Select Type</option>
                     {#each typeOptions as option}
@@ -136,24 +137,26 @@
             </div>
             <div class="flex flex-row items-center">
                 <input type="radio" name="radio" bind:group={formState.radio} value={1}
-                       class="radio checked: bg-red-500 mr-2"/>
+                       class="radio checked: bg-red-500 mr-2" on:input={() => handleChange('newtype')}/>
                 <input bind:value={formState.newtype} name="newtype"
-                       class="input input-bordered w-full" on:input={()=>handleChange('newtype')}/>
-                {#if res.hasErrors('newtype')}
-                    <div class="decoration-red-400">{res.getErrors('newtype')}</div>
-                {/if}
+                       class="input input-bordered w-full" on:input={()=>handleChange('newtype')}
+                class:border-red-600={res.hasErrors('newtype')}/>
             </div>
+            {#if res.hasErrors('newtype')}
+                <div class="text-red-400 text-sm mt-1 px-8">{res.getErrors('newtype')}</div>
+            {/if}
         </div>
 
-        <div class="form-control">
+        <div class="form-control my-4">
             <label class="label" for="notes">
                 <span class="label-text">Notes</span>
             </label>
             <textarea name="notes" id="notes" class="textarea textarea-bordered"></textarea>
         </div>
 
-        <button disabled={!res.isValid()} type="submit" class="btn btn-primary mt-2">Add Incident</button>
+        <button disabled={!res.valid} type="submit" class="btn btn-primary mt-2">Add Incident</button>
 
+        <div></div>
     </form>
 
     {#if form?.missing}
