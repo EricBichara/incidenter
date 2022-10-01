@@ -3,7 +3,7 @@
     import {enhance} from '$app/forms';
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
-    import type {ActionData, PageData} from "./$types";
+    import type {ActionData, PageData} from "$types";
     import suite from "$lib/suite";
 
     /** @type {import('./$types').PageData} */
@@ -106,7 +106,7 @@
           class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
-        <div class="form-control w-full max-w-md">
+        <div class="form-control w-full max-w-md mt-4">
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
             </label>
@@ -115,11 +115,11 @@
                    class:border-red-600={res.hasErrors('incidentId')}
                    class="input input-bordered"/>
             {#if res.hasErrors('incidentId')}
-                <div class="decoration-red-400">{res.getErrors('incidentId')}</div>
+                <div class="text-red-400 text-sm mt-1 px-4">{res.getErrors('incidentId')}</div>
             {/if}
         </div>
 
-        <div class="form-control w-full max-w-md">
+        <div class="form-control w-full max-w-md mt-4">
             <label class="label cursor-pointer justify-start" for="type">
                 <span class="label-text">Type</span>
             </label>
