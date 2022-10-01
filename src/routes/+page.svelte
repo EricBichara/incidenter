@@ -91,16 +91,16 @@
     }
 
 </script>
-<div class="mx-48 grid lg:grid-cols-2 gap-4">
+<div class="container mx-auto grid md:grid-cols-2 gap-4">
 
-    <div class="p-8 border aspect-square shadow-lg rounded-md">
+    <div class="p-6 border aspect-square shadow-lg rounded-md">
         <canvas bind:this={chartCanvas} id="myChart"></canvas>
     </div>
     <form method="POST" action="?/add" use:enhance
-          class="border p-8 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
+          class="border p-6 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
-        <div class="form-control w-full max-w-md">
+        <div class="form-control">
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
             </label>
@@ -112,11 +112,11 @@
             {/if}
         </div>
 
-        <div class="form-control w-full max-w-md">
+        <div class="form-control">
             <label class="label cursor-pointer justify-start" for="type">
                 <span class="label-text">Type</span>
             </label>
-            <div class="flex flex-row items-center mb-2 max-w-md">
+            <div class="flex flex-row items-center mb-2">
                 <input id="type" bind:group={radio} value={0} type="radio" name="radio"
                        class="radio checked: bg-red-500 mr-2" checked/>
                 <select name="selected" class="select select-bordered" value={selectedType}>
@@ -126,9 +126,9 @@
                     {/each}
                 </select>
             </div>
-            <div class="flex flex-row items-center w-full max-w-md">
+            <div class="flex flex-row items-center">
                 <input type="radio" name="radio" bind:group={radio} value={1} class="radio checked: bg-red-500 mr-2"/>
-                <input name="newtype" class="input input-bordered w-full"/>
+                <input name="newtype" class="input input-bordered"/>
             </div>
         </div>
 
@@ -136,7 +136,7 @@
             <label class="label" for="notes">
                 <span class="label-text">Notes</span>
             </label>
-            <textarea name="notes" id="notes" class="textarea textarea-bordered max-w-md"></textarea>
+            <textarea name="notes" id="notes" class="textarea textarea-bordered"></textarea>
         </div>
 
         <button disabled={!res.isValid()} type="submit" class="btn btn-primary mt-2">Add Incident</button>
@@ -148,7 +148,7 @@
     {/if}
 </div>
 
-<div class="flex flex-col mx-32 mt-6">
+<div class="container mx-auto flex flex-col mt-6">
     <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div class="py-4 inline-block min-w-full sm:px-6 lg:px-8">
             <div class="overflow-hidden">
