@@ -3,7 +3,7 @@
     import {enhance} from '$app/forms';
     import type {Incident} from "$lib/model";
     import {onMount} from "svelte";
-    import type {ActionData, PageData} from "./$types";
+    import type {ActionData, PageData} from "$types";
     import suite from "$lib/suite";
 
     /** @type {import('./$types').PageData} */
@@ -36,11 +36,17 @@
 
     //FORM VALIDATION
     let res = suite.get();
-    let formState = {};
-    const handleChange = name => {
-        console.log('change');
-        res = suite(formState);
-    };
+    let formState = {radio: 0};
+
+    $: {
+        res = suite(formState, field);
+    }
+
+    let field = 'none';
+
+    function handleChange(changedField) {
+        field = changedField;
+    }
 
     onMount(async () => {
         prepareData();
@@ -100,24 +106,26 @@
           class="border p-6 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
-        <div class="form-control">
+        <div class="form-control mt-4">
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
             </label>
-            <input type="text" id="incident" name="code" class="input input-bordered"
-                   bind:value={formState.incidentId}
-                   on:input={handleChange}/>
-            {#if res.getErrors('incidentId')}
-                <div class="bg-red-500 text-accent/70">{res.getErrors('incidentId')}</div>
+            <input type="text" id="incident" name="code"
+                   bind:value={formState.incidentId} on:input={()=>handleChange('incidentId')}
+                   class:border-red-600={res.hasErrors('incidentId')}
+                   class="input input-bordered"/>
+            {#if res.hasErrors('incidentId')}
+                <div class="text-red-400 text-sm mt-1 px-4">{res.getErrors('incidentId')}</div>
             {/if}
         </div>
 
-        <div class="form-control">
+        <div class="form-control mt-4">
             <label class="label cursor-pointer justify-start" for="type">
                 <span class="label-text">Type</span>
             </label>
             <div class="flex flex-row items-center mb-2">
-                <input id="type" bind:group={radio} value={0} type="radio" name="radio"
+                <input id="type" bind:group={formState.radio} value={0} type="radio"
+                       name="radio"
                        class="radio checked: bg-red-500 mr-2" checked/>
                 <select name="selected" class="select select-bordered" value={selectedType}>
                     <option disabled>Select Type</option>
@@ -127,8 +135,13 @@
                 </select>
             </div>
             <div class="flex flex-row items-center">
-                <input type="radio" name="radio" bind:group={radio} value={1} class="radio checked: bg-red-500 mr-2"/>
-                <input name="newtype" class="input input-bordered"/>
+                <input type="radio" name="radio" bind:group={formState.radio} value={1}
+                       class="radio checked: bg-red-500 mr-2"/>
+                <input bind:value={formState.newtype} name="newtype"
+                       class="input input-bordered w-full" on:input={()=>handleChange('newtype')}/>
+                {#if res.hasErrors('newtype')}
+                    <div class="decoration-red-400">{res.getErrors('newtype')}</div>
+                {/if}
             </div>
         </div>
 
