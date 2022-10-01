@@ -39,7 +39,13 @@
     let formState = {radio: 0};
 
     $: {
-        res = suite(formState);
+        res = suite(formState, field);
+    }
+
+    let field = 'none';
+
+    function handleChange(changedField) {
+        field = changedField;
     }
 
     onMount(async () => {
@@ -104,10 +110,12 @@
             <label class="label" for="incident">
                 <span class="label-text">Incident Number</span>
             </label>
-            <input type="text" id="incident" name="code" class="input input-bordered"
-                   bind:value={formState.incidentId}/>
-            {#if res.getErrors('incidentId')}
-                <div class="bg-red-500 text-accent/70">{res.getErrors('incidentId')}</div>
+            <input type="text" id="incident" name="code"
+                   bind:value={formState.incidentId} on:input={()=>handleChange('incidentId')}
+                   class:border-red-600={res.hasErrors('incidentId')}
+                   class="input input-bordered"/>
+            {#if res.hasErrors('incidentId')}
+                <div class="decoration-red-400">{res.getErrors('incidentId')}</div>
             {/if}
         </div>
 
@@ -130,7 +138,10 @@
                 <input type="radio" name="radio" bind:group={formState.radio} value={1}
                        class="radio checked: bg-red-500 mr-2"/>
                 <input bind:value={formState.newtype} name="newtype"
-                       class="input input-bordered w-full"/>
+                       class="input input-bordered w-full" on:input={()=>handleChange('newtype')}/>
+                {#if res.hasErrors('newtype')}
+                    <div class="decoration-red-400">{res.getErrors('newtype')}</div>
+                {/if}
             </div>
         </div>
 
