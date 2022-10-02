@@ -14,7 +14,6 @@
     export let form: ActionData;
 
     let selectedType;
-    let radio = 0;
 
     $: incidents = data.incidents as Incident[];
     $: types = data.types as Type[];
@@ -108,10 +107,6 @@
 
         <button disabled={!res.valid} type="submit" class="btn btn-primary mt-2">Add Incident</button>
     </form>
-
-    {#if form?.missing}
-        <div>Some fiels are missing</div>
-    {/if}
 </div>
 
 <IncidentTable incidents={incidents}></IncidentTable>
