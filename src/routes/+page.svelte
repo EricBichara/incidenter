@@ -1,10 +1,11 @@
 <script lang="ts">
-    import {Chart, registerables} from "chart.js";
     import {enhance} from '$app/forms';
-    import type {Incident} from "$lib/model";
-    import {onMount} from "svelte";
+    import {invalidateAll} from '$app/navigation';
+    import type {Incident, Type} from "$lib/model";
     import type {ActionData, PageData} from "$types";
     import suite from "$lib/suite";
+    import IncidentChart from "$lib/IncidentChart.svelte";
+    import IncidentTable from "$lib/IncidentTable.svelte";
 
     /** @type {import('./$types').PageData} */
     export let data: PageData;
@@ -12,26 +13,15 @@
     /** @type {import('./$types').ActionData} */
     export let form: ActionData;
 
-    let chartValues;
-    let chartLabels;
-    let typeOptions = [];
-
     let selectedType;
     let radio = 0;
 
-    let chartCanvas: HTMLCanvasElement;
-    let chart;
-
     $: incidents = data.incidents as Incident[];
+    $: types = data.types as Type[];
 
     $: {
-        incidents;
-        if (chart) {
-            prepareData();
-            chart.data.labels = chartLabels;
-            chart.data.datasets[0].data = chartValues;
-            chart.update();
-        }
+        types;
+        selectedType = 1;
     }
 
     //FORM VALIDATION
@@ -48,61 +38,23 @@
         field = changedField;
     }
 
-    onMount(async () => {
-        prepareData();
-        createChart();
-    });
-
-    function prepareData() {
-        let map = new Map();
-        typeOptions = [];
-        incidents.forEach((incident) => {
-            if (map.get(incident.types.title)) {
-                map.set(incident.types.title, 1 + map.get(incident.types.title));
-            } else {
-                map.set(incident.types.title, 1);
-                typeOptions = [...typeOptions, incident.types];
+    function callback() {
+        return async ({result}) => {
+            console.log('here')
+            if (result.type === 'success') {
+                formState = {radio: 0}
+                suite.reset();
+                await invalidateAll();
             }
-        })
-        chartLabels = Array.from(map.keys());
-        chartValues = Array.from(map.values());
-    }
-
-    function createChart() {
-        Chart.register(...registerables);
-        const tableData = {
-            labels: chartLabels,
-            datasets: [{
-                label: 'Incidenter',
-                data: chartValues,
-                backgroundColor: ["#191919", "#2D4263", "#C84B31", "#ECDBBA", "#7FDBFF", "#B10DC9", "#FFDC00", "#001f3f", "#39CCCC", "#01FF70", "#85144b", "#F012BE", "#3D9970", "#111111", "#AAAAAA"]
-            }]
         };
-
-        const ctx = chartCanvas.getContext('2d');
-        if (ctx) {
-            chart = new Chart(ctx, {
-                data: tableData,
-                type: 'pie',
-                options: {
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: {
-                            position: "bottom"
-                        }
-                    }
-                }
-            })
-        }
     }
-
 </script>
 <div class="container mx-auto grid md:grid-cols-2 gap-4">
 
     <div class="p-6 border aspect-square shadow-lg rounded-md">
-        <canvas bind:this={chartCanvas} id="myChart"></canvas>
+        <IncidentChart chartData={incidents}></IncidentChart>
     </div>
-    <form method="POST" action="?/add" use:enhance
+    <form method="POST" action="?/add" use:enhance={callback}
           class="border p-6 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
@@ -115,7 +67,7 @@
                    class:border-red-600={res.hasErrors('incidentId')}
                    class="input input-bordered"/>
             {#if res.hasErrors('incidentId')}
-                <div class="text-red-400 text-sm mt-1 px-4">{res.getErrors('incidentId')}</div>
+                <div class="text-red-400 text-sm mt-2 px-4">{res.getErrors('incidentId')}</div>
             {/if}
         </div>
 
@@ -128,9 +80,9 @@
                        name="radio"
                        class="radio checked: bg-red-500 mr-2" checked
                        on:input={()=>handleChange('newtype')}/>
-                <select name="selected" class="select select-bordered" value={selectedType}>
+                <select name="selected" class="custom-select select select-bordered" value={selectedType}>
                     <option disabled>Select Type</option>
-                    {#each typeOptions as option}
+                    {#each types as option}
                         <option value={option.id}>{option.title}</option>
                     {/each}
                 </select>
@@ -140,10 +92,10 @@
                        class="radio checked: bg-red-500 mr-2" on:input={() => handleChange('newtype')}/>
                 <input bind:value={formState.newtype} name="newtype"
                        class="input input-bordered w-full" on:input={()=>handleChange('newtype')}
-                class:border-red-600={res.hasErrors('newtype')}/>
+                       class:border-red-600={res.hasErrors('newtype')}/>
             </div>
             {#if res.hasErrors('newtype')}
-                <div class="text-red-400 text-sm mt-1 px-8">{res.getErrors('newtype')}</div>
+                <div class="text-red-400 text-sm mt-2 px-12">{res.getErrors('newtype')}</div>
             {/if}
         </div>
 
@@ -155,8 +107,6 @@
         </div>
 
         <button disabled={!res.valid} type="submit" class="btn btn-primary mt-2">Add Incident</button>
-
-        <div></div>
     </form>
 
     {#if form?.missing}
@@ -164,52 +114,10 @@
     {/if}
 </div>
 
-<div class="container mx-auto flex flex-col mt-6">
-    <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div class="py-4 inline-block min-w-full sm:px-6 lg:px-8">
-            <div class="overflow-hidden">
-                <table class="min-w-full text-center">
-                    <thead class="border-b bg-gray-50">
-                    <tr>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Incident ID
-                        </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Type
-                        </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Created At
-                        </th>
-                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
-                            Notes
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {#each incidents as incident}
-                        <tr class="bg-white border-b hover:bg-gray-100">
-                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
-                                {incident.incidentId}
-                            </td>
-                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
-                                {incident.types.title}
-                            </td>
-                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
-                                {new Date(incident.created_at).toLocaleDateString()}
-                            </td>
-                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
-                                {incident.notes}
-                            </td>
-                        </tr>
-                    {/each}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
+<IncidentTable incidents={incidents}></IncidentTable>
 
 <style lang="scss">
-
+  .custom-select {
+    width: calc(100% - 30px);
+  }
 </style>

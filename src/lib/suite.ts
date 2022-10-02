@@ -1,20 +1,17 @@
-import {create, enforce, only, optional, test} from "vest";
+import {create, enforce, omitWhen, only, test} from "vest";
 
 
 const suite = create((data = {}, field) => {
     only(field);
 
-    test('incidentId', 'incident id is required', () => {
+    test('incidentId', 'Incident id is required', () => {
         enforce(data.incidentId).isNotBlank();
     })
 
-    test('newtype', 'type required', () => {
-        if (data.radio === 1) {
-            console.log('test newtype')
+    omitWhen(data.radio === 0, () => {
+        test('newtype', 'Type required', () => {
             enforce(data.newtype).isNotBlank();
-        }else{
-            return true;
-        }
+        })
     })
 })
 

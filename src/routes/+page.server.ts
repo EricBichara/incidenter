@@ -5,9 +5,9 @@ import {error as err, invalid} from "@sveltejs/kit";
 
 export const load: PageServerLoad = async () => {
     const incidents = await supabase.from('incidents').select(`incidentId, created_at, types:typeId(title, id), notes`);
-
+    const types = await supabase.from('types').select();
     if (incidents) {
-        return {incidents: incidents.data as Incident[]};
+        return {incidents: incidents.data as Incident[], types: types.data as Type[]};
     }
 
     throw err(404, 'Not found');
