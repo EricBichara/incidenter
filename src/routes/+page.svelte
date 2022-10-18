@@ -2,7 +2,7 @@
     import {enhance} from '$app/forms';
     import {invalidateAll} from '$app/navigation';
     import type {Incident, Type} from "$lib/model";
-    import type {ActionData, PageData} from "$types";
+    import type {PageData} from "$types";
     import suite from "$lib/suite";
     import IncidentChart from "$lib/IncidentChart.svelte";
     import IncidentTable from "$lib/IncidentTable.svelte";
@@ -10,8 +10,6 @@
     /** @type {import('./$types').PageData} */
     export let data: PageData;
 
-    /** @type {import('./$types').ActionData} */
-    export let form: ActionData;
 
     let selectedType;
 
