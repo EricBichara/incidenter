@@ -53,7 +53,7 @@
     <div class="p-6 border aspect-square shadow-lg rounded-md">
         <IncidentChart chartData={incidents}></IncidentChart>
     </div>
-    <form method="POST" action="?/add" use:enhance={callback}
+    <form method="POST" action="?/add" use:enhance
           class="border p-6 aspect-square shadow-lg rounded-md flex-col justify-center items-center">
         <div class="text-2xl font-bold">Add Incident</div>
 
