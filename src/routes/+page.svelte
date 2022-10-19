@@ -37,7 +37,6 @@
 
     function callback() {
         return async ({result}) => {
-            console.log('here')
             if (result.type === 'success') {
                 formState = {radio: 0}
                 suite.reset();

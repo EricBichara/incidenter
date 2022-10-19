@@ -18,8 +18,6 @@ export const actions: Actions = {
 
     add: async ({request}) => {
 
-
-
         const form = await request.formData();
         const incidentNumber: string = form.get('code') as string;
         const newTypeSelected: boolean = form.get('radio') === '1';
@@ -31,21 +29,22 @@ export const actions: Actions = {
         if (!incidentNumber || (newTypeSelected && !newType)) {
             return invalid(400, {missing: true});
         }
-
+        console.log(1)
         //Get types
         const typesResponse = await supabase.from('types').select(`id, title`);
         const types: Type[] = typesResponse.data as Type[];
         //Add if new type
         const isNewType = types.find((type: Type) => type.title == newType) == undefined;
-
+        console.log(2)
         if (newTypeSelected && isNewType) {
             const typesResult = await supabase.from('types').insert({
                 title: newType
             })
 
             if (typesResult.error) {
-                throw err(404, {message: 'something went wrong'});
+                throw err(404, {message: typesResult.error.message});
             }
+
             const incidents1 = await supabase.from('incidents').insert({
                     typeId: typesResult.data[0].id,
                     incidentId: incidentNumber,
@@ -54,7 +53,7 @@ export const actions: Actions = {
             )
 
             if (incidents1.error) {
-                throw err(404, {message: 'something went wrong'});
+                throw err(404, {message: incidents1.error.message});
             }
         } else {
             const incidents2 = await supabase.from('incidents').insert({
@@ -63,9 +62,8 @@ export const actions: Actions = {
                     notes: notes
                 }
             )
-
             if (incidents2.error) {
-                throw err(404, {message: 'something went wrong'});
+                throw err(404, {message: incidents2.error.message});
             }
         }
     },
