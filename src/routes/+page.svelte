@@ -6,12 +6,11 @@
     import suite from "$lib/suite";
     import IncidentChart from "$lib/IncidentChart.svelte";
     import IncidentTable from "$lib/IncidentTable.svelte";
+    import {ActionData} from "$types";
 
-    /** @type {import('./$types').PageData} */
     export let data: PageData;
 
-    /** @type {import('./$types').ActionData} */
-    export let form;
+    export let form: ActionData;
 
     let selectedType;
 

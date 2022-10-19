@@ -13,7 +13,6 @@ export const load: PageServerLoad = async () => {
     throw err(404, 'Not found');
 }
 
-/** @type {import('./$types').Actions} */
 export const actions: Actions = {
 
     delete: async ({request}) => {
