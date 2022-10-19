@@ -2,11 +2,10 @@
     import {enhance} from '$app/forms';
     import {invalidateAll} from '$app/navigation';
     import type {Incident, Type} from "$lib/model";
-    import type {PageData} from "$types";
+    import type {PageData, ActionData} from "$types";
     import suite from "$lib/suite";
     import IncidentChart from "$lib/IncidentChart.svelte";
     import IncidentTable from "$lib/IncidentTable.svelte";
-    import {ActionData} from "$types";
 
     export let data: PageData;
 

@@ -19,7 +19,7 @@
             }
 
             if (sortColumn === 'created_at') {
-                return sortDirection === Direction.DESC ? val1 - val2 : val2 - val1;
+                return sortDirection === Direction.DESC ? val2 - val1 : val1 - val2;
             } else {
                 if (val1 > val2) {
                     return sortDirection === Direction.DESC ? 1 : -1;
