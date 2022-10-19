@@ -6,19 +6,32 @@
     export let incidents: Incident[];
 
     $:  {
-
+        console.log(sortColumn)
         incidents.sort((n1, n2) => {
-            const val1 = sortColumn === 'types' ? n1['types']['id'] : n1[sortColumn];
-            const val2 = sortColumn === 'types' ? n2['types']['id'] : n1[sortColumn];
-            if (val1 > val2) {
-                return sortDirection === Direction.DESC ? 1 : -1;
+            let val1;
+            let val2;
+            if (sortColumn === 'types') {
+                val1 = n1['types']['id'];
+                val2 = n2['types']['id'];
+            } else {
+                val1 = new Date(n1[sortColumn]);
+                val2 = new Date(n2[sortColumn]);
             }
 
-            if (val1 < val2) {
-                return sortDirection == Direction.DESC ? -1 : 1;
+            if (sortColumn === 'created_at') {
+                return sortDirection === Direction.DESC ? val1 - val2 : val2 - val1;
+            } else {
+                if (val1 > val2) {
+                    return sortDirection === Direction.DESC ? 1 : -1;
+                }
+
+                if (val1 < val2) {
+                    return sortDirection == Direction.DESC ? -1 : 1;
+                }
+
+                return 0;
             }
 
-            return 0;
         });
         incidents = incidents;
     }

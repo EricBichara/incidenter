@@ -17,6 +17,9 @@ export const load: PageServerLoad = async () => {
 export const actions: Actions = {
 
     add: async ({request}) => {
+
+
+
         const form = await request.formData();
         const incidentNumber: string = form.get('code') as string;
         const newTypeSelected: boolean = form.get('radio') === '1';
