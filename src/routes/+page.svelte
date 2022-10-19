@@ -10,6 +10,8 @@
     /** @type {import('./$types').PageData} */
     export let data: PageData;
 
+    /** @type {import('./$types').ActionData} */
+    export let form;
 
     let selectedType;
 
@@ -64,6 +66,9 @@
                    class="input input-bordered"/>
             {#if res.hasErrors('incidentId')}
                 <div class="text-red-400 text-sm mt-2 px-4">{res.getErrors('incidentId')}</div>
+            {/if}
+            {#if form?.duplicate}
+                <div class="text-red-400 text-sm mt-2 px-4">Duplicate Incident Number</div>
             {/if}
         </div>
 

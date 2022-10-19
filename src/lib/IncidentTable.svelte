@@ -6,7 +6,6 @@
     export let incidents: Incident[];
 
     $:  {
-        console.log(sortColumn)
         incidents.sort((n1, n2) => {
             let val1;
             let val2;

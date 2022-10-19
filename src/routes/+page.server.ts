@@ -29,13 +29,13 @@ export const actions: Actions = {
         if (!incidentNumber || (newTypeSelected && !newType)) {
             return invalid(400, {missing: true});
         }
-        console.log(1)
+
         //Get types
         const typesResponse = await supabase.from('types').select(`id, title`);
         const types: Type[] = typesResponse.data as Type[];
         //Add if new type
         const isNewType = types.find((type: Type) => type.title == newType) == undefined;
-        console.log(2)
+
         if (newTypeSelected && isNewType) {
             const typesResult = await supabase.from('types').insert({
                 title: newType
@@ -63,7 +63,11 @@ export const actions: Actions = {
                 }
             )
             if (incidents2.error) {
-                throw err(404, {message: incidents2.error.message});
+                if (incidents2.error.code === '23505') {
+                    return invalid(400, {incidentNumber, duplicate: true});
+                } else {
+                    throw err(404, {message: incidents2.error.message});
+                }
             }
         }
     },
