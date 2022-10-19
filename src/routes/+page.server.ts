@@ -16,6 +16,17 @@ export const load: PageServerLoad = async () => {
 /** @type {import('./$types').Actions} */
 export const actions: Actions = {
 
+    delete: async ({request}) => {
+        const form = await request.formData();
+        const incidentNumber: string = form.get('incidentId') as string;
+
+        const response = await supabase.from('incidents').delete().eq('incidentId', incidentNumber);
+
+        if (response.error) {
+            throw err(400, response.error.message);
+        }
+    },
+
     add: async ({request}) => {
 
         const form = await request.formData();

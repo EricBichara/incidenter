@@ -2,6 +2,7 @@
     import type {Incident} from "$lib/model";
     import SortingHeader from "$lib/SortingHeader.svelte";
     import {Direction} from "$lib/enums";
+    import {enhance} from '$app/forms';
 
     export let incidents: Incident[];
 
@@ -37,6 +38,7 @@
 
     let sortColumn = 'types';
     let sortDirection = Direction.ASC;
+
 </script>
 
 
@@ -61,6 +63,9 @@
                         <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Notes
                         </th>
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-center">
+                            Delete
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -77,6 +82,12 @@
                             </td>
                             <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {incident.notes}
+                            </td>
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-center font-medium">
+                                <form action="/?/delete" use:enhance>
+                                    <input type="hidden" name="incidentId" value={incident.incidentId}/>
+                                    <button type="submit" class="btn btn-circle btn-outline"><i class="fa-solid fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     {/each}
