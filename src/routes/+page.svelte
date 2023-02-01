@@ -2,16 +2,16 @@
     import {enhance} from '$app/forms';
     import {invalidateAll} from '$app/navigation';
     import type {Incident, Type} from "$lib/model";
-    import type {PageData} from "$types";
     import suite from "$lib/suite";
     import IncidentChart from "$lib/IncidentChart.svelte";
     import IncidentTable from "$lib/IncidentTable.svelte";
+	import type { PageData } from './$types';
 
-    /** @type {import('./$types').PageData} */
+    
     export let data: PageData;
 
 
-    let selectedType;
+    let selectedType: number;
 
     $: incidents = data.incidents as Incident[];
     $: types = data.types as Type[];
@@ -23,7 +23,7 @@
 
     //FORM VALIDATION
     let res = suite.get();
-    let formState = {radio: 0};
+    let formState = {radio: 0, incidentId: undefined, newtype: undefined};
 
     $: {
         res = suite(formState, field);
@@ -31,20 +31,10 @@
 
     let field = 'none';
 
-    function handleChange(changedField) {
+    function handleChange(changedField: string) {
         field = changedField;
     }
-
-    function callback() {
-        return async ({result}) => {
-            console.log('here')
-            if (result.type === 'success') {
-                formState = {radio: 0}
-                suite.reset();
-                await invalidateAll();
-            }
-        };
-    }
+    
 </script>
 <div class="container mx-auto grid md:grid-cols-2 gap-4">
 
