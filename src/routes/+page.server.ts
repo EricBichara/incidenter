@@ -13,10 +13,21 @@ export const load: PageServerLoad = async () => {
     throw err(404, 'Not found');
 }
 
-/** @type {import('./$types').Actions} */
 export const actions: Actions = {
 
+    delete: async ({request}) => {
+        const form = await request.formData();
+        const incidentNumber: string = form.get('incidentId') as string;
+
+        const response = await supabase.from('incidents').delete().eq('incidentId', incidentNumber);
+
+        if (response.error) {
+            throw err(400, response.error.message);
+        }
+    },
+
     add: async ({request}) => {
+
         const form = await request.formData();
         const incidentNumber: string = form.get('code') as string;
         const newTypeSelected: boolean = form.get('radio') === '1';
@@ -41,8 +52,9 @@ export const actions: Actions = {
             })
 
             if (typesResult.error) {
-                throw err(404, {message: 'something went wrong'});
+                throw err(404, {message: typesResult.error.message});
             }
+
             const incidents1 = await supabase.from('incidents').insert({
                     typeId: typesResult.data[0].id,
                     incidentId: incidentNumber,
@@ -51,7 +63,7 @@ export const actions: Actions = {
             )
 
             if (incidents1.error) {
-                throw err(404, {message: 'something went wrong'});
+                throw err(404, {message: incidents1.error.message});
             }
         } else {
             const incidents2 = await supabase.from('incidents').insert({
@@ -60,9 +72,12 @@ export const actions: Actions = {
                     notes: notes
                 }
             )
-
             if (incidents2.error) {
-                throw err(404, {message: 'something went wrong'});
+                if (incidents2.error.code === '23505') {
+                    return invalid(400, {incidentNumber, duplicate: true});
+                } else {
+                    throw err(404, {message: incidents2.error.message});
+                }
             }
         }
     },

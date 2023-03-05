@@ -2,29 +2,43 @@
     import type {Incident} from "$lib/model";
     import SortingHeader from "$lib/SortingHeader.svelte";
     import {Direction} from "$lib/enums";
+    import {enhance} from '$app/forms';
 
     export let incidents: Incident[];
 
     $:  {
-
         incidents.sort((n1, n2) => {
-            const val1 = sortColumn === 'types' ? n1['types']['id'] : n1[sortColumn];
-            const val2 = sortColumn === 'types' ? n2['types']['id'] : n1[sortColumn];
-            if (val1 > val2) {
-                return sortDirection === Direction.DESC ? 1 : -1;
+            let val1;
+            let val2;
+            if (sortColumn === 'types') {
+                val1 = n1['types']['id'];
+                val2 = n2['types']['id'];
+            } else {
+                val1 = new Date(n1[sortColumn]);
+                val2 = new Date(n2[sortColumn]);
             }
 
-            if (val1 < val2) {
-                return sortDirection == Direction.DESC ? -1 : 1;
+            if (sortColumn === 'created_at') {
+                return sortDirection === Direction.DESC ? val2 - val1 : val1 - val2;
+            } else {
+                if (val1 > val2) {
+                    return sortDirection === Direction.DESC ? 1 : -1;
+                }
+
+                if (val1 < val2) {
+                    return sortDirection == Direction.DESC ? -1 : 1;
+                }
+
+                return 0;
             }
 
-            return 0;
         });
         incidents = incidents;
     }
 
     let sortColumn = 'types';
     let sortDirection = Direction.ASC;
+
 </script>
 
 
@@ -49,6 +63,9 @@
                         <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-left">
                             Notes
                         </th>
+                        <th scope="col" class="text-sm font-medium text-gray-900 px-6 py-4 text-center">
+                            Delete
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -65,6 +82,12 @@
                             </td>
                             <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-left font-medium">
                                 {incident.notes}
+                            </td>
+                            <td class="text-sm text-gray-900 px-6 py-4 whitespace-nowrap text-center font-medium">
+                                <form action="/?/delete" use:enhance>
+                                    <input type="hidden" name="incidentId" value={incident.incidentId}/>
+                                    <button type="submit" class="btn btn-circle btn-outline"><i class="fa-solid fa-trash"></i></button>
+                                </form>
                             </td>
                         </tr>
                     {/each}

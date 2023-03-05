@@ -2,16 +2,16 @@
     import {enhance} from '$app/forms';
     import {invalidateAll} from '$app/navigation';
     import type {Incident, Type} from "$lib/model";
+    import type {PageData, ActionData} from "$types";
     import suite from "$lib/suite";
     import IncidentChart from "$lib/IncidentChart.svelte";
     import IncidentTable from "$lib/IncidentTable.svelte";
-	import type { PageData } from './$types';
 
-    
     export let data: PageData;
 
+    export let form: ActionData;
 
-    let selectedType: number;
+    let selectedType;
 
     $: incidents = data.incidents as Incident[];
     $: types = data.types as Type[];
@@ -23,7 +23,7 @@
 
     //FORM VALIDATION
     let res = suite.get();
-    let formState = {radio: 0, incidentId: undefined, newtype: undefined};
+    let formState = {radio: 0};
 
     $: {
         res = suite(formState, field);
@@ -31,10 +31,19 @@
 
     let field = 'none';
 
-    function handleChange(changedField: string) {
+    function handleChange(changedField) {
         field = changedField;
     }
-    
+
+    function callback() {
+        return async ({result}) => {
+            if (result.type === 'success') {
+                formState = {radio: 0}
+                suite.reset();
+                await invalidateAll();
+            }
+        };
+    }
 </script>
 <div class="container mx-auto grid md:grid-cols-2 gap-4">
 
@@ -55,6 +64,9 @@
                    class="input input-bordered"/>
             {#if res.hasErrors('incidentId')}
                 <div class="text-red-400 text-sm mt-2 px-4">{res.getErrors('incidentId')}</div>
+            {/if}
+            {#if form?.duplicate}
+                <div class="text-red-400 text-sm mt-2 px-4">Duplicate Incident Number</div>
             {/if}
         </div>
 
